@@ -97,7 +97,6 @@ ROUTER_LLM_MODEL=gpt-4o-mini
 Notes:
 
 * `ROUTER_LLM_MODEL` is optional and defaults to `gpt-4o-mini`
-* `.env` must **not** be committed (ignored by `.gitignore`)
 
 ---
 
@@ -216,35 +215,4 @@ curl -X POST http://localhost:8000/v1/context/query \
 
 ---
 
-## Notes on Local Files
 
-* `.env` and `.venv/` should remain local
-* `mock_requests.csv` is generated and can be regenerated at any time
-
-Recommended `.gitignore`:
-
-```gitignore
-.env
-.venv/
-__pycache__/
-*.pyc
-```
-
----
-
-## Limitations
-
-This prototype intentionally omits:
-
-* real-time streaming ingestion
-* persistent state stores (Redis, ClickHouse)
-* async quality pipelines
-* operator dashboards
-
----
-
-## Commit History
-
-This repository reflects a completed prototype submitted as a single commit due to time constraints. Design intent and trade-offs are communicated through code structure and documentation.
-
----
