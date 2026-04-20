@@ -19,6 +19,23 @@ The design emphasizes:
 
 ---
 
+## Live Demo
+
+**Interactive API Docs (Swagger UI):** https://arcpoint.onrender.com/docs
+
+> **Note:** The app is hosted on Render's free tier and may take ~30 seconds to wake up after a period of inactivity.
+
+### Example Queries To Try
+
+| Query Type | Example |
+|---|---|
+| Routing | "Which model should I use for a code-gen task with a 300ms SLA?" |
+| Quality Investigation | "Why did quality drop for reasoning tasks two days ago?" |
+| Forecasting | "What will traffic look like in the next hour?" |
+| Fleet Status | "What models are available for summarization?" |
+
+---
+
 ## Repository Structure
 
 ```
@@ -34,17 +51,36 @@ Arcpoint/
 │       └── mock_requests.csv       # Generated request log
 ├── generate_requests.py            # Generates synthetic request traffic
 ├── requirements.txt               # Python dependencies
+├── .env.example                   # Environment variable template
 ├── .gitignore                     # Prevents secrets / venv from being committed
 └── README.md
 ```
 
 ---
 
-## Setup
+## How It Works
+
+* `ContextEngine` loads:
+
+  * model snapshot (`model_state.json`)
+  * historical request log (`mock_requests.csv`)
+* An LLM classifies query intent into:
+
+  * `route`, `forecast`, `quality_issue`, or `models`
+* Deterministic logic assembles evidence:
+
+  * viability checks + stratified Top-N routing
+  * historical quality comparison vs baseline
+  * traffic forecast using rolling windows
+* The LLM produces a natural-language answer using **only the provided evidence**
+
+---
+
+## Local Setup
+
+> The API is already deployed and live. The instructions below are only needed if you want to run the project locally.
 
 ### 1. Create and Activate a Python Virtual Environment
-
-From the project root:
 
 #### Windows (PowerShell)
 
@@ -67,8 +103,6 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-You should see `(.venv)` in your terminal.
-
 ---
 
 ### 2. Install Dependencies
@@ -81,11 +115,6 @@ pip install -r requirements.txt
 
 ### 3. Configure OpenAI API Key
 
-This project uses the OpenAI API for:
-
-* query intent classification
-* evidence-backed natural language responses
-
 Create a `.env` file in the project root:
 
 ```env
@@ -93,21 +122,11 @@ OPENAI_API_KEY=your_openai_key_here
 ROUTER_LLM_MODEL=gpt-4o-mini
 ```
 
-Notes:
-
-* `ROUTER_LLM_MODEL` is optional and defaults to `gpt-4o-mini`
+> `ROUTER_LLM_MODEL` is optional and defaults to `gpt-4o-mini`
 
 ---
 
-## Generate Synthetic Data
-
-The Context Engine reads request history from:
-
-```
-app/data/mock_requests.csv
-```
-
-Generate it using:
+### 4. Generate Synthetic Data
 
 ```bash
 python generate_requests.py
@@ -122,68 +141,30 @@ This creates **10,000 realistic requests** across ~5 days with:
 
 ---
 
-## Run the API
-
-Start the FastAPI server:
+### 5. Run the API Locally
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-The service will be available at:
-
-```
-http://localhost:8000
-```
-
----
-
-## Using Swagger / OpenAPI UI
-
-FastAPI automatically exposes an interactive Swagger UI.
-
-### Open Swagger UI
-
-Once the server is running, open your browser and go to:
-
-```
-http://localhost:8000/docs
-```
-
----
-
-### How to Submit a Query via Swagger
-
-1. Expand the endpoint:
-
-   ```
-   POST /v1/context/query
-   ```
-
-2. Click **“Try it out”**
-
-3. Enter request payload in the body field:
-
-```json
-{
-  "user_id": "operator_1",
-  "query": "Why did quality drop for reasoning tasks two days ago?"
-}
-```
-
-4. Click **Execute**
-
-5. View:
-
-   * the generated response
-   * returned natural-language explanation
-   * HTTP status and latency
-
-Swagger UI is the recommended way to explore the Context Layer interactively without using curl.
+The service will be available at `http://localhost:8000` and Swagger UI at `http://localhost:8000/docs`
 
 ---
 
 ## Querying via cURL (Optional)
+
+**Against the live deployment:**
+
+```bash
+curl -X POST https://arcpoint.onrender.com/v1/context/query \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "operator_1",
+    "query": "What will traffic look like in the next hour?"
+  }'
+```
+
+**Against a local instance:**
 
 ```bash
 curl -X POST http://localhost:8000/v1/context/query \
@@ -196,22 +177,11 @@ curl -X POST http://localhost:8000/v1/context/query \
 
 ---
 
-## How It Works 
+## Deployment
 
-* `ContextEngine` loads:
+Deployed on **Render** as a live web service.
 
-  * model snapshot (`model_state.json`)
-  * historical request log (`mock_requests.csv`)
-* An LLM classifies query intent into:
-
-  * `route`, `forecast`, `quality_issue`, or `models`
-* Deterministic logic assembles evidence:
-
-  * viability checks + stratified Top-N routing
-  * historical quality comparison vs baseline
-  * traffic forecast using rolling windows
-* The LLM produces a natural-language answer using **only the provided evidence**
-
----
-
-
+* **Platform:** Render (Free Tier)
+* **Live URL:** https://arcpoint.onrender.com/docs
+* **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port 8000`
+* **Environment Variables:** `OPENAI_API_KEY` configured via Render dashboard
