@@ -34,7 +34,6 @@ Arcpoint/
 │       └── mock_requests.csv       # Generated request log
 ├── generate_requests.py            # Generates synthetic request traffic
 ├── requirements.txt               # Python dependencies
-├── .env.example                   # Environment variable template
 ├── .gitignore                     # Prevents secrets / venv from being committed
 └── README.md
 ```
