@@ -21,9 +21,9 @@ The design emphasizes:
 
 ## Live Demo
 
-**Live Demo:** https://modelpilot.onrender.com
+**Live Demo:** https://modelpilot-chix.onrender.com
 
-**Interactive API Docs (Swagger UI):** https://modelpilot.onrender.com/docs
+**Interactive API Docs (Swagger UI):** https://modelpilot-chix.onrender.com/docs
 
 > **Note:** The app is hosted on Render's free tier and may take ~30 seconds to wake up after a period of inactivity.
 
@@ -158,7 +158,7 @@ The service will be available at `http://localhost:8000` and Swagger UI at `http
 **Against the live deployment:**
 
 ```bash
-curl -X POST https://modelpilot.onrender.com/v1/context/query \
+curl -X POST https://modelpilot-chix.onrender.com/v1/context/query \
   -H "Content-Type: application/json" \
   -d '{
     "user_id": "operator_1",
@@ -184,6 +184,6 @@ curl -X POST http://localhost:8000/v1/context/query \
 Deployed on **Render** as a live web service.
 
 * **Platform:** Render (Free Tier)
-* **Live URL:** https://modelpilot.onrender.com
+* **Live URL:** https://modelpilot-chix.onrender.com
 * **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port 8000`
 * **Environment Variables:** `OPENAI_API_KEY` configured via Render dashboard
