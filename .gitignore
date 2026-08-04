@@ -1,0 +1,12 @@
+# Environment variables
+.env
+openai_key.txt
+# Virtual environment
+.venv/
+venv/
+# Python cache
+__pycache__/
+*.pyc
+# VS Code / OS junk
+.vscode/
+.DS_Store
